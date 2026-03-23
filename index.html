@@ -13,9 +13,6 @@
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
-    <!-- SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
     <style>
         /* =========================================
            1. CSS VARIABLES (PALET WARNA & UKURAN)
@@ -41,8 +38,10 @@
             --slate-700: #334155;
             --slate-800: #1e293b;
             
+            --amber-100: #fef3c7;
             --amber-400: #fbbf24;
             --amber-500: #f59e0b;
+            --amber-600: #d97706;
             --blue-400: #60a5fa;
             --blue-500: #3b82f6;
             --rose-400: #fb7185;
@@ -215,6 +214,20 @@
             .card { padding: 2rem; }
         }
 
+        /* Setup Area Collapse Animation */
+        .setup-area {
+            max-height: 1000px;
+            opacity: 1;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out, opacity 0.4s ease-in-out;
+        }
+
+        .setup-area.collapsed {
+            max-height: 0;
+            opacity: 0;
+            pointer-events: none;
+        }
+
         .card-header {
             display: flex;
             align-items: center;
@@ -334,7 +347,7 @@
 
         .text-center-input {
             text-align: center;
-            padding-left: 1rem; /* override to center properly */
+            padding-left: 1rem;
         }
 
         /* CUSTOM DROPDOWN (Searchable) */
@@ -427,6 +440,13 @@
             justify-content: center;
             border-top: 1px solid var(--slate-100);
             padding-top: 1.5rem;
+            transition: all 0.5s ease-in-out;
+        }
+
+        .setup-area.collapsed + .btn-group {
+            margin-top: 0;
+            padding-top: 0;
+            border-top-color: transparent;
         }
 
         @media (min-width: 768px) {
@@ -596,13 +616,6 @@
 
         @media (min-width: 768px) { .display-area { padding: 3rem; } }
 
-        .loading-indicator {
-            padding: 3rem 0;
-            color: var(--emerald-600);
-        }
-        .loading-indicator i { font-size: 3rem; margin-bottom: 1rem; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1)); }
-        .loading-indicator p { font-size: 0.875rem; font-weight: 500; animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-
         .surah-badge {
             display: inline-flex;
             align-items: center;
@@ -624,6 +637,20 @@
             margin: 1.5rem 0 3rem 0;
             line-height: 2.2 !important;
             filter: drop-shadow(0 1px 1px rgba(0,0,0,0.05));
+        }
+
+        /* --- HIGHLIGHT KATA (STABILO AKURAT) --- */
+        .word-span {
+            border-radius: 0.375rem;
+            padding: 0 0.125rem;
+            transition: background-color 0.2s ease, color 0.2s ease;
+            display: inline-block;
+        }
+
+        .word-span.highlighted {
+            background-color: var(--emerald-200);
+            color: var(--emerald-900);
+            box-shadow: 0 0 0 2px var(--emerald-200);
         }
 
         @media (min-width: 768px) {
@@ -668,7 +695,76 @@
         @media (min-width: 768px) { .text-indonesia { font-size: 1.125rem; } }
 
         /* =========================================
-           10. FOOTER
+           10. CUSTOM MODAL (REPLACEMENT FOR SWEETALERT)
+           ========================================= */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 2rem;
+            width: 100%;
+            max-width: 24rem;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            transform: scale(0.9);
+            transition: all 0.3s ease;
+            margin: 0 1rem;
+        }
+        
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+        
+        .modal-icon {
+            width: 4rem; height: 4rem;
+            margin: 0 auto 1.5rem auto;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2rem;
+        }
+        
+        .modal-icon.success { background-color: var(--emerald-100); color: var(--emerald-500); }
+        .modal-icon.warning { background-color: var(--amber-100); color: var(--amber-500); }
+        
+        .modal-title { font-size: 1.5rem; font-weight: 700; color: var(--slate-800); margin-bottom: 0.5rem; }
+        .modal-text { color: var(--slate-600); margin-bottom: 2rem; line-height: 1.5; }
+        
+        .modal-btn { 
+            width: 100%; 
+            padding: 0.875rem; 
+            border-radius: 0.75rem; 
+            font-weight: 700; 
+            color: white; 
+            border: none; 
+            cursor: pointer; 
+            transition: all 0.2s; 
+            font-size: 1rem; 
+        }
+        .modal-btn.success { background-color: var(--emerald-500); }
+        .modal-btn.success:hover { background-color: var(--emerald-600); }
+        .modal-btn.warning { background-color: var(--amber-500); }
+        .modal-btn.warning:hover { background-color: var(--amber-600); }
+
+        /* =========================================
+           11. FOOTER
            ========================================= */
         footer {
             text-align: center;
@@ -714,81 +810,84 @@
     <main class="main-content container relative z-10">
         
         <!-- Setup Card -->
-        <div class="card">
-            <div class="card-header">
-                <div class="card-icon">
-                    <i class="ph-bold ph-sliders-horizontal"></i>
+        <div class="card" id="setupCard">
+            <!-- Container untuk Animasi Collapse Panel Pengaturan -->
+            <div id="setupFormArea" class="setup-area">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="ph-bold ph-sliders-horizontal"></i>
+                    </div>
+                    <h2 class="card-title">Pengaturan Hafalan</h2>
                 </div>
-                <h2 class="card-title">Pengaturan Hafalan</h2>
-            </div>
-            
-            <div class="form-grid">
-                <!-- Pencarian Surah (Custom Dropdown) -->
-                <div class="form-group relative">
-                    <label class="form-label">Cari & Pilih Surah</label>
-                    <div class="input-wrapper" id="surahSearchContainer">
-                        <div class="input-icon-left"><i class="ph-bold ph-magnifying-glass"></i></div>
-                        <input type="text" id="surahSearchInput" class="form-control" placeholder="Ketik nama surah..." autocomplete="off">
-                        <div class="input-icon-right"><i class="ph-bold ph-caret-down"></i></div>
-                        
-                        <!-- Dropdown List Container -->
-                        <div id="surahDropdownList" class="dropdown-menu hidden">
-                            <div class="dropdown-item text-center">Memuat daftar surah...</div>
+                
+                <div class="form-grid">
+                    <!-- Pencarian Surah (Custom Dropdown) -->
+                    <div class="form-group relative">
+                        <label class="form-label">Cari & Pilih Surah</label>
+                        <div class="input-wrapper" id="surahSearchContainer">
+                            <div class="input-icon-left"><i class="ph-bold ph-magnifying-glass"></i></div>
+                            <input type="text" id="surahSearchInput" class="form-control" placeholder="Ketik nama surah..." autocomplete="off">
+                            <div class="input-icon-right"><i class="ph-bold ph-caret-down"></i></div>
+                            
+                            <!-- Dropdown List Container -->
+                            <div id="surahDropdownList" class="dropdown-menu hidden">
+                                <div class="dropdown-item text-center">Memuat daftar surah...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reciter Selection (Nilai: equranId|quranComId) -->
+                    <div class="form-group">
+                        <label class="form-label">Qari (Suara Audio)</label>
+                        <div class="input-wrapper">
+                            <div class="input-icon-left"><i class="ph-fill ph-headphones"></i></div>
+                            <select id="qariSelect" class="form-control">
+                                <option value="05|7">Misyari Rasyid Al-Afasi</option>
+                                <option value="03|3">Abdurrahman as-Sudais</option>
+                                <option value="02|2">Abdul Basit (Murattal)</option>
+                                <option value="04|4">Abu Bakr al-Shatri</option>
+                                <option value="01|12">Mahmoud Khalil Al-Husary</option>
+                            </select>
+                            <div class="input-icon-right"><i class="ph-bold ph-caret-down"></i></div>
+                        </div>
+                    </div>
+
+                    <!-- Range Ayat -->
+                    <div class="form-group">
+                        <label class="form-label">Rentang Ayat</label>
+                        <div class="range-wrapper">
+                            <div class="input-wrapper" style="flex: 1;">
+                                <input type="number" id="startAyah" list="ayahOptions" class="form-control text-center-input" placeholder="Mulai" disabled min="1">
+                            </div>
+                            <span class="range-separator"><i class="ph-bold ph-arrow-right"></i></span>
+                            <div class="input-wrapper" style="flex: 1;">
+                                <input type="number" id="endAyah" list="ayahOptions" class="form-control text-center-input" placeholder="Akhir" disabled min="1">
+                            </div>
+                        </div>
+                        <!-- Daftar Pilihan Ayat -->
+                        <datalist id="ayahOptions"></datalist>
+                    </div>
+
+                    <!-- Repeat Count -->
+                    <div class="form-group">
+                        <label class="form-label">Jumlah Pengulangan (1-100)</label>
+                        <div class="input-wrapper">
+                            <div class="input-icon-left"><i class="ph-fill ph-arrows-clockwise"></i></div>
+                            <input type="number" id="repeatCount" min="1" max="100" value="10" class="form-control">
+                        </div>
+                    </div>
+
+                    <!-- Volume Slider -->
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label class="form-label">Volume Audio</label>
+                        <div class="volume-wrapper">
+                            <i id="volumeIcon" class="ph-fill ph-speaker-high text-emerald" style="font-size: 1.5rem;"></i>
+                            <input type="range" id="volumeSlider" class="volume-slider" min="0" max="1" step="0.01" value="1">
+                            <span id="volumePercentage" style="font-size: 0.875rem; font-weight: 600; color: var(--slate-600); width: 40px; text-align: right;">100%</span>
                         </div>
                     </div>
                 </div>
-
-                <!-- Reciter Selection -->
-                <div class="form-group">
-                    <label class="form-label">Qari (Suara Audio)</label>
-                    <div class="input-wrapper">
-                        <div class="input-icon-left"><i class="ph-fill ph-headphones"></i></div>
-                        <select id="qariSelect" class="form-control">
-                            <option value="05">Misyari Rasyid Al-Afasi</option>
-                            <option value="01">Abdullah Al-Juhany</option>
-                            <option value="02">Abdul Muhdir</option>
-                            <option value="03">Abdurrahman as-Sudais</option>
-                            <option value="04">Ibrahim ad-Dawsari</option>
-                        </select>
-                        <div class="input-icon-right"><i class="ph-bold ph-caret-down"></i></div>
-                    </div>
-                </div>
-
-                <!-- Range Ayat -->
-                <div class="form-group">
-                    <label class="form-label">Rentang Ayat</label>
-                    <div class="range-wrapper">
-                        <div class="input-wrapper" style="flex: 1;">
-                            <input type="number" id="startAyah" list="ayahOptions" class="form-control text-center-input" placeholder="Mulai" disabled min="1">
-                        </div>
-                        <span class="range-separator"><i class="ph-bold ph-arrow-right"></i></span>
-                        <div class="input-wrapper" style="flex: 1;">
-                            <input type="number" id="endAyah" list="ayahOptions" class="form-control text-center-input" placeholder="Akhir" disabled min="1">
-                        </div>
-                    </div>
-                    <!-- Daftar Pilihan Ayat -->
-                    <datalist id="ayahOptions"></datalist>
-                </div>
-
-                <!-- Repeat Count -->
-                <div class="form-group">
-                    <label class="form-label">Jumlah Pengulangan (1-100)</label>
-                    <div class="input-wrapper">
-                        <div class="input-icon-left"><i class="ph-fill ph-arrows-clockwise"></i></div>
-                        <input type="number" id="repeatCount" min="1" max="100" value="10" class="form-control">
-                    </div>
-                </div>
-
-                <!-- Volume Slider -->
-                <div class="form-group" style="grid-column: 1 / -1;">
-                    <label class="form-label">Volume Audio</label>
-                    <div class="volume-wrapper">
-                        <i id="volumeIcon" class="ph-fill ph-speaker-high text-emerald" style="font-size: 1.5rem;"></i>
-                        <input type="range" id="volumeSlider" class="volume-slider" min="0" max="1" step="0.01" value="1">
-                        <span id="volumePercentage" style="font-size: 0.875rem; font-weight: 600; color: var(--slate-600); width: 40px; text-align: right;">100%</span>
-                    </div>
-                </div>
-            </div>
+            </div> <!-- End of setup-area -->
 
             <!-- Action Buttons -->
             <div class="btn-group">
@@ -837,12 +936,6 @@
 
             <!-- Ayah Display -->
             <div class="display-area">
-                <!-- Loading Indicator for Ayah -->
-                <div id="ayahLoading" class="loading-indicator hidden">
-                    <i class="ph-bold ph-spinner-gap spin-icon" style="animation-duration: 1s;"></i>
-                    <p>Menyiapkan lantunan ayat...</p>
-                </div>
-
                 <div id="ayahContent">
                     <div class="surah-badge">
                         <i class="ph-fill ph-book-open text-emerald"></i>
@@ -862,9 +955,19 @@
 
     </main>
 
+    <!-- Custom Modal -->
+    <div id="customModal" class="modal-overlay">
+        <div class="modal-content">
+            <div id="modalIcon" class="modal-icon"></div>
+            <h3 id="modalTitle" class="modal-title"></h3>
+            <p id="modalText" class="modal-text"></p>
+            <button id="modalBtn" class="modal-btn">Tutup</button>
+        </div>
+    </div>
+
     <footer>
         <p>Dibangun untuk membantu Muroja'ah.</p>
-        <p>Data disediakan oleh <a href="https://equran.id" target="_blank">equran.id</a> API.</p>
+        <p>Data disediakan oleh <a href="https://equran.id" target="_blank">equran.id</a> & <a href="https://quran.com" target="_blank">Quran.com</a> API.</p>
     </footer>
 
     <!-- JavaScript Logic -->
@@ -881,11 +984,20 @@
             startAyah: 1,
             endAyah: 1,
             currentAyahPlaying: 1,
-            audioElement: new Audio()
+            audioElement: new Audio(),
+            useQuranComData: false, // Menandai apakah sedang menggunakan data sinkron akurat
+            currentFallbackUrl: '',
+            
+            currentSegments: null, // Menyimpan segment waktu ayat yang sedang diputar
+            totalWords: 0, // Menyimpan total kata pada ayat saat ini
+            currentWordPosition: -1 // Melacak posisi kata yang sedang di-highlight
         };
+        
+        let animationFrameId = null;
 
         // --- DOM Elements ---
         const els = {
+            setupFormArea: document.getElementById('setupFormArea'),
             surahSearchInput: document.getElementById('surahSearchInput'),
             surahDropdownContainer: document.getElementById('surahSearchContainer'),
             surahDropdownList: document.getElementById('surahDropdownList'),
@@ -915,9 +1027,6 @@
             teksArab: document.getElementById('teksArab'),
             teksLatin: document.getElementById('teksLatin'),
             teksIndonesia: document.getElementById('teksIndonesia'),
-            
-            ayahContent: document.getElementById('ayahContent'),
-            ayahLoading: document.getElementById('ayahLoading')
         };
 
         // --- Initialization ---
@@ -937,11 +1046,38 @@
                 console.error(error);
             }
             
-            // Set initial volume
             state.audioElement.volume = els.volumeSlider.value;
         }
 
-        // --- Fitur Pencarian Surah (Custom Dropdown) ---
+        // --- Modal Kustom ---
+        function showModal(type, title, text, callback) {
+            const modal = document.getElementById('customModal');
+            const icon = document.getElementById('modalIcon');
+            const titleEl = document.getElementById('modalTitle');
+            const textEl = document.getElementById('modalText');
+            const btn = document.getElementById('modalBtn');
+            
+            if (type === 'success') {
+                icon.className = 'modal-icon success';
+                icon.innerHTML = '<i class="ph-bold ph-check"></i>';
+                btn.className = 'modal-btn success';
+            } else if (type === 'warning') {
+                icon.className = 'modal-icon warning';
+                icon.innerHTML = '<i class="ph-bold ph-warning"></i>';
+                btn.className = 'modal-btn warning';
+            }
+            
+            titleEl.textContent = title;
+            textEl.textContent = text;
+            modal.classList.add('active');
+            
+            btn.onclick = () => {
+                modal.classList.remove('active');
+                if (callback) callback();
+            };
+        }
+
+        // --- Fitur Pencarian Surah ---
         function renderSurahDropdown(list) {
             els.surahDropdownList.innerHTML = '';
             
@@ -955,7 +1091,6 @@
                 item.className = 'dropdown-item';
                 item.textContent = `${surah.nomor}. ${surah.namaLatin} (${surah.jumlahAyat} Ayat)`;
                 
-                // Ketika item surah diklik
                 item.addEventListener('click', () => {
                     handleSurahSelection(surah);
                 });
@@ -964,7 +1099,6 @@
             });
         }
 
-        // Event listener saat user mengetik di input pencarian
         els.surahSearchInput.addEventListener('input', (e) => {
             const query = e.target.value.toLowerCase();
             const filteredList = state.surahList.filter(surah => 
@@ -975,10 +1109,8 @@
             els.surahDropdownList.classList.remove('hidden');
         });
 
-        // Buka dropdown saat input di-klik/fokus
         els.surahSearchInput.addEventListener('focus', () => {
             if (state.surahList.length > 0) {
-                // Render ulang penuh jika input kosong
                 if (els.surahSearchInput.value === '') {
                     renderSurahDropdown(state.surahList);
                 }
@@ -986,21 +1118,17 @@
             }
         });
 
-        // Tutup dropdown jika klik di luar area
         document.addEventListener('click', (e) => {
             if (!els.surahDropdownContainer.contains(e.target)) {
                 els.surahDropdownList.classList.add('hidden');
             }
         });
 
-        // Logic memproses pemilihan surah
         async function handleSurahSelection(surah) {
-            // Update UI Input
             els.surahSearchInput.value = `${surah.nomor}. ${surah.namaLatin}`;
             els.surahDropdownList.classList.add('hidden');
             state.selectedSurahNumber = surah.nomor;
 
-            // Disable interaksi sementara
             els.surahSearchInput.disabled = true;
             els.startAyah.disabled = true;
             els.endAyah.disabled = true;
@@ -1030,28 +1158,22 @@
         els.volumeSlider.addEventListener('input', (e) => {
             const volumeValue = parseFloat(e.target.value);
             state.audioElement.volume = volumeValue;
-            
-            // Update Teks Persentase
             els.volumePercentage.textContent = Math.round(volumeValue * 100) + '%';
             
-            // Update Ikon Dinamis
             let iconClass = 'ph-speaker-high';
             if (volumeValue === 0) iconClass = 'ph-speaker-none';
             else if (volumeValue < 0.4) iconClass = 'ph-speaker-low';
-            
             els.volumeIcon.className = `ph-fill ${iconClass} text-emerald`;
         });
 
-        // Input Validasi untuk Rentang Ayat (Mulai dan Akhir)
+        // --- Validasi Rentang Ayat ---
         els.startAyah.addEventListener('change', () => {
             let start = parseInt(els.startAyah.value);
             let end = parseInt(els.endAyah.value);
             let max = parseInt(els.startAyah.max);
-
             if (isNaN(start) || start < 1) start = 1;
             if (start > max) start = max;
             if (start > end) els.endAyah.value = start;
-
             els.startAyah.value = start;
         });
 
@@ -1059,70 +1181,181 @@
             let start = parseInt(els.startAyah.value);
             let end = parseInt(els.endAyah.value);
             let max = parseInt(els.endAyah.max);
-
             if (isNaN(end) || end < 1) end = 1;
             if (end > max) end = max;
             if (end < start) els.startAyah.value = end;
-
             els.endAyah.value = end;
         });
 
+        // --- Kontrol Pemutar ---
         els.btnPlay.addEventListener('click', startMemorization);
-        
         els.btnPause.addEventListener('click', () => {
             if (state.isPlaying && !state.isPaused) {
                 state.audioElement.pause();
                 state.isPaused = true;
                 els.btnPause.className = 'btn btn-info';
                 els.btnPause.innerHTML = '<i class="ph-fill ph-play-circle"></i> Lanjutkan';
+                els.setupFormArea.classList.remove('collapsed');
             } else if (state.isPlaying && state.isPaused) {
-                state.audioElement.play();
+                state.audioElement.play().then(() => {
+                    if (animationFrameId) cancelAnimationFrame(animationFrameId);
+                    animationFrameId = requestAnimationFrame(updateHighlight);
+                }).catch(e => console.error(e));
                 state.isPaused = false;
                 els.btnPause.className = 'btn btn-warning';
                 els.btnPause.innerHTML = '<i class="ph-fill ph-pause-circle"></i> Jeda';
+                els.setupFormArea.classList.add('collapsed');
             }
         });
-
         els.btnStop.addEventListener('click', stopMemorization);
 
-        // --- Audio Core Logic ---
-        
+        // --- Audio Core Logic & Timestamps ---
         state.audioElement.addEventListener('ended', handleAudioEnded);
-        state.audioElement.addEventListener('error', (e) => {
-            console.error("Audio Playback Error", e);
-            const mediaError = state.audioElement.error;
-            let detail = "";
-            if(mediaError) {
-                detail = ` (Kode: ${mediaError.code})`;
+        
+        // --- LOOP STABILO KARAOKE SUPER AKURAT (60 FPS) ---
+        function updateHighlight() {
+            if (!state.isPlaying || state.isPaused) return;
+            
+            let newPosition = -1;
+
+            if (state.useQuranComData && state.currentSegments) {
+                // 1. MODE AKURAT: Timestamps dari Quran.com (Miliseconds)
+                const currentTimeMs = state.audioElement.currentTime * 1000;
+                
+                // Cari segmen kata aktif
+                let segIndex = -1;
+                for (let i = 0; i < state.currentSegments.length; i++) {
+                    const seg = state.currentSegments[i];
+                    if (currentTimeMs >= seg[1] && currentTimeMs <= seg[2]) {
+                        segIndex = i;
+                        break;
+                    }
+                }
+                
+                if (segIndex !== -1) {
+                    newPosition = state.currentSegments[segIndex][0];
+                } else {
+                    // Jika di jeda antar kata/napas, pertahankan stabilo pada kata terakhir yang diucapkan
+                    for (let i = state.currentSegments.length - 1; i >= 0; i--) {
+                        if (currentTimeMs > state.currentSegments[i][2]) {
+                            newPosition = state.currentSegments[i][0];
+                            break;
+                        }
+                    }
+                    // Jika sebelum kata pertama dimulai
+                    if (newPosition === -1 && state.currentSegments[0]) {
+                        newPosition = state.currentSegments[0][0];
+                    }
+                }
+            } else {
+                // 2. MODE PERKIRAAN FALLBACK (Persentase Durasi Equran)
+                if (state.audioElement.duration) {
+                    const progress = state.audioElement.currentTime / state.audioElement.duration;
+                    newPosition = Math.floor(progress * state.totalWords);
+                    if (newPosition >= state.totalWords) newPosition = state.totalWords - 1;
+                }
             }
-            // Menambahkan nomor ayat secara spesifik pada pesan error
-            showError(`Gagal memutar audio ayat ${state.currentAyahPlaying}${detail}. Melompat ke ayat berikutnya...`);
-            setTimeout(handleAudioEnded, 2000); 
+
+            // Terapkan Efek Sorot (Highlight) pada DOM
+            if (newPosition !== -1 && state.currentWordPosition !== newPosition) {
+                
+                // Matikan semua highlight yang aktif sebelumnya secara bersih
+                document.querySelectorAll('.word-span.highlighted').forEach(el => el.classList.remove('highlighted'));
+
+                // Nyalakan highlight untuk kata yang baru diputar
+                const newSpan = document.getElementById(`word-${newPosition}`);
+                if (newSpan) newSpan.classList.add('highlighted');
+
+                // --- EXTRA LOGIC: PENYEMPURNAAN KATA TERAKHIR & SIMBOL AYAT ---
+                if (state.useQuranComData && state.currentSegments) {
+                    // Jika ini adalah kata Arab terakhir yang memiliki audio...
+                    const lastSegmentPos = state.currentSegments[state.currentSegments.length - 1][0];
+                    if (newPosition === lastSegmentPos) {
+                        // ...Maka otomatis nyalakan juga Simbol Nomor Ayat di ujung kalimat (yang tidak bersuara)
+                        for(let i = 1; i <= 2; i++) {
+                            const endSpan = document.getElementById(`word-${newPosition + i}`);
+                            if (endSpan) endSpan.classList.add('highlighted');
+                        }
+                    }
+                } else {
+                    // Di mode fallback equran, kata terakhir seringkali adalah simbol ayat yang dipotong spasi.
+                    // Jika posisi mencapai 2 kata terakhir, stabilo kata terakhir dan simbolnya bersaman.
+                    if (newPosition >= state.totalWords - 2) {
+                        const spanLastWord = document.getElementById(`word-${state.totalWords - 2}`);
+                        const spanEndMark = document.getElementById(`word-${state.totalWords - 1}`);
+                        if(spanLastWord) spanLastWord.classList.add('highlighted');
+                        if(spanEndMark) spanEndMark.classList.add('highlighted');
+                    }
+                }
+
+                state.currentWordPosition = newPosition;
+            }
+
+            // Memanggil frame berikutnya agar animasi stabilo mulus
+            animationFrameId = requestAnimationFrame(updateHighlight);
+        }
+        
+        state.audioElement.addEventListener('error', (e) => {
+            if (!state.isPlaying) return;
+            const mediaError = state.audioElement.error;
+            let detail = mediaError ? ` (Kode: ${mediaError.code})` : "";
+            
+            // JIKA QURAN.COM GAGAL, BERALIH OTOMATIS KE EQURAN
+            if (state.useQuranComData && state.currentFallbackUrl) {
+                console.warn("Quran.com audio failed. Switching to equran.id fallback...");
+                state.useQuranComData = false;
+                
+                // Render ulang Teks Arab ke versi Equran (Split Spasi Biasa)
+                const ayahData = state.currentSurahData.ayat[state.currentAyahPlaying - 1];
+                const arabicWords = ayahData.teksArab.trim().split(/\s+/);
+                state.totalWords = arabicWords.length;
+                state.currentWordPosition = -1;
+                
+                els.teksArab.innerHTML = arabicWords.map((word, index) => 
+                    `<span id="word-${index}" class="word-span">${word}</span>`
+                ).join(' ');
+
+                // Muat audio fallback
+                state.audioElement.src = state.currentFallbackUrl;
+                state.audioElement.load();
+                
+                const playPromise = state.audioElement.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        if (animationFrameId) cancelAnimationFrame(animationFrameId);
+                        animationFrameId = requestAnimationFrame(updateHighlight);
+                    }).catch(err => {
+                        triggerErrorSkip(detail);
+                    });
+                }
+                return;
+            }
+            
+            triggerErrorSkip(detail);
         });
+
+        function triggerErrorSkip(detail) {
+            showError(`Gagal memutar audio ayat ${state.currentAyahPlaying}${detail}. Melompat ke ayat berikutnya...`);
+            setTimeout(() => {
+                if (state.isPlaying) handleAudioEnded();
+            }, 2000);
+        }
 
         function startMemorization() {
             if (!state.currentSurahData) return;
 
-            // Get Input Values
             const start = parseInt(els.startAyah.value);
             const end = parseInt(els.endAyah.value);
             let repeat = parseInt(els.repeatCount.value);
 
-            // Validations
             if (isNaN(start) || isNaN(end)) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Perhatian',
-                    text: 'Silakan isi rentang ayat dengan benar.',
-                    confirmButtonColor: '#10b981'
-                });
+                showModal('warning', 'Perhatian', 'Silakan isi rentang ayat dengan benar.');
                 return;
             }
             if (isNaN(repeat) || repeat < 1) repeat = 1;
             if (repeat > 100) repeat = 100;
             els.repeatCount.value = repeat;
 
-            // Set State
             state.startAyah = start;
             state.endAyah = end;
             state.targetRepeat = repeat;
@@ -1131,7 +1364,8 @@
             state.isPlaying = true;
             state.isPaused = false;
 
-            // Update UI
+            els.setupFormArea.classList.add('collapsed');
+
             els.btnPlay.classList.add('hidden');
             els.btnPause.classList.remove('hidden');
             els.btnStop.classList.remove('hidden');
@@ -1146,77 +1380,114 @@
             els.lblTotalRepeat.textContent = state.targetRepeat;
             els.lblSurahName.textContent = state.currentSurahData.namaLatin;
 
-            // Reset pause button to default state
-            els.btnPause.className = 'btn btn-warning';
-            els.btnPause.innerHTML = '<i class="ph-fill ph-pause-circle"></i> Jeda';
-
-            hideError();
             playCurrentAyah();
         }
 
-        function playCurrentAyah() {
+        async function playCurrentAyah() {
             if (!state.isPlaying) return;
 
-            // Sembunyikan notifikasi error dari ayat sebelumnya jika ayat saat ini bisa diputar
             hideError(); 
 
-            // Update Counters in UI
             els.lblCurrentRepeat.textContent = state.currentRepeat;
             els.lblCurrentAyah.textContent = state.currentAyahPlaying;
             els.lblAyahNumberInText.textContent = state.currentAyahPlaying;
 
-            // Find Ayah Data
             const ayahData = state.currentSurahData.ayat[state.currentAyahPlaying - 1];
-            
             if (!ayahData) {
                 stopMemorization();
                 return;
             }
 
-            // Update Text UI
-            els.teksArab.textContent = ayahData.teksArab;
+            // Set terjemahan selalu dari equran
             els.teksLatin.textContent = ayahData.teksLatin;
             els.teksIndonesia.textContent = ayahData.teksIndonesia;
 
-            // Setup Audio
-            const selectedQari = els.qariSelect.value || "05";
-            let audioUrl = "";
+            // --- FETCH PER-AYAT QURAN.COM (REALTIME) ---
+            const qariValues = els.qariSelect.value.split('|');
+            const equranQariId = qariValues[0];
+            const quranComQariId = qariValues[1];
             
-            // Fallback: Jika Qari pilihan tidak ada, pakai Qari pertama yang tersedia di data
-            if (ayahData.audio) {
-                audioUrl = ayahData.audio[selectedQari] || Object.values(ayahData.audio)[0];
+            let audioUrl = "";
+            state.currentSegments = null; 
+            state.useQuranComData = false;
+            
+            // Siapkan URL Fallback equran
+            let fallbackUrl = ayahData.audio[equranQariId] || Object.values(ayahData.audio)[0];
+            if (fallbackUrl) fallbackUrl = fallbackUrl.replace(/^http:\/\//i, 'https://');
+            state.currentFallbackUrl = fallbackUrl;
+
+            els.btnPause.innerHTML = '<i class="ph-bold ph-spinner-gap spin-icon"></i> Menyiapkan...';
+
+            try {
+                const verseKey = `${state.selectedSurahNumber}:${state.currentAyahPlaying}`;
+                // KUNCI AKURASI: Minta audio DAN susunan kata arabnya secara bersamaan
+                const response = await fetch(`https://api.quran.com/api/v4/verses/by_key/${verseKey}?words=true&word_fields=text_uthmani&audio=${quranComQariId}`);
+                if(response.ok) {
+                    const data = await response.json();
+                    if (data.verse && data.verse.audio && data.verse.words) {
+                        audioUrl = data.verse.audio.url;
+                        
+                        if (audioUrl) {
+                            if (audioUrl.startsWith('//')) {
+                                audioUrl = 'https:' + audioUrl;
+                            } else if (!audioUrl.startsWith('http')) {
+                                audioUrl = 'https://verses.quran.com/' + audioUrl;
+                            }
+                            
+                            state.useQuranComData = true;
+                            state.currentSegments = data.verse.audio.segments;
+                            state.totalWords = data.verse.words.length;
+                            state.currentWordPosition = -1;
+
+                            // Render Teks Arab Sesuai Kata dari Quran.com
+                            els.teksArab.innerHTML = data.verse.words.map(w => 
+                                `<span id="word-${w.position}" class="word-span">${w.text_uthmani}</span>`
+                            ).join(' ');
+                        }
+                    }
+                }
+            } catch (err) {
+                console.warn("Gagal fetch quran.com, menggunakan fallback equran.id", err);
             }
 
-            // Jika masih kosong (api equran mengembalikan format tidak terduga)
+            // Jika Quran.com gagal/kosong, fallback gunakan Teks & Audio Equran
+            if (!state.useQuranComData) {
+                audioUrl = state.currentFallbackUrl;
+                
+                const arabicWords = ayahData.teksArab.trim().split(/\s+/);
+                state.totalWords = arabicWords.length;
+                state.currentWordPosition = -1; 
+
+                els.teksArab.innerHTML = arabicWords.map((word, index) => 
+                    `<span id="word-${index}" class="word-span">${word}</span>`
+                ).join(' ');
+            }
+            
+            els.btnPause.className = 'btn btn-warning';
+            els.btnPause.innerHTML = '<i class="ph-fill ph-pause-circle"></i> Jeda';
+            
             if (!audioUrl) {
-                console.error("URL Audio tidak ditemukan untuk ayat", state.currentAyahPlaying);
-                showError(`Link audio tidak tersedia untuk ayat ${state.currentAyahPlaying}. Melompat...`);
-                setTimeout(handleAudioEnded, 2000);
+                showError("Gagal menemukan link audio untuk ayat ini.");
+                setTimeout(() => { if (state.isPlaying) handleAudioEnded(); }, 2000);
                 return;
             }
 
-            // Memastikan menggunakan protokol HTTPS untuk mencegah error Mixed Content / blokir koneksi
-            audioUrl = audioUrl.replace(/^http:\/\//i, 'https://');
-            
             state.audioElement.src = audioUrl;
-            
-            // Penting: paksa browser mengenali source baru sebelum pemutaran
             state.audioElement.load(); 
             
             const playPromise = state.audioElement.play();
-            
             if (playPromise !== undefined) {
-                playPromise.catch(e => {
-                    console.error("Autoplay prevented or error", e);
-                    state.isPaused = true;
-                    els.btnPause.className = 'btn btn-info';
-                    els.btnPause.innerHTML = '<i class="ph-fill ph-play-circle"></i> Mulai Audio';
-                    
-                    showError(`Browser menunda audio atau gagal dimuat (Ayat ${state.currentAyahPlaying}). Klik "Mulai Audio"...`);
-                    
-                    // NotSupportedError sering muncul jika link benar-benar mati/format salah
-                    if(e.name === 'NotSupportedError') {
-                         setTimeout(handleAudioEnded, 2000);
+                playPromise.then(() => {
+                    // Mulai loop stabilo setelah audio mulai diputar
+                    if (animationFrameId) cancelAnimationFrame(animationFrameId);
+                    animationFrameId = requestAnimationFrame(updateHighlight);
+                }).catch(e => {
+                    console.error("Play Promise error:", e);
+                    if (e.name === 'NotAllowedError') {
+                        state.isPaused = true;
+                        els.btnPause.className = 'btn btn-info';
+                        els.btnPause.innerHTML = '<i class="ph-fill ph-play-circle"></i> Mulai Audio';
+                        showError(`Browser memblokir pemutaran otomatis. Klik tombol "Mulai Audio" untuk melanjutkan.`);
                     }
                 });
             }
@@ -1225,21 +1496,15 @@
         function handleAudioEnded() {
             if (!state.isPlaying) return;
 
-            // Logic for looping
             if (state.currentAyahPlaying < state.endAyah) {
-                // Next Ayah in the range
                 state.currentAyahPlaying++;
                 playCurrentAyah();
             } else {
-                // Reached end of range, check repeat count
                 if (state.currentRepeat < state.targetRepeat) {
                     state.currentRepeat++;
                     state.currentAyahPlaying = state.startAyah;
-                    
-                    // Add a tiny delay between repeats for better UX
                     setTimeout(playCurrentAyah, 1000); 
                 } else {
-                    // Finished completely
                     finishMemorization();
                 }
             }
@@ -1250,31 +1515,24 @@
             state.isPaused = false;
             state.audioElement.pause();
             state.audioElement.currentTime = 0;
-            
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
             resetUIAfterPlay();
         }
 
         function finishMemorization() {
             state.isPlaying = false;
             state.audioElement.pause();
-            
-            Swal.fire({
-                icon: 'success',
-                title: 'Alhamdulillah!',
-                text: 'Sesi hafalan telah selesai.',
-                confirmButtonColor: '#10b981',
-                confirmButtonText: 'Tutup'
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
+            showModal('success', 'Alhamdulillah!', 'Sesi hafalan telah selesai.', () => {
+                resetUIAfterPlay();
             });
-            resetUIAfterPlay();
         }
 
         function resetUIAfterPlay() {
-            // Restore buttons
             els.btnPlay.classList.remove('hidden');
             els.btnPause.classList.add('hidden');
             els.btnStop.classList.add('hidden');
-            
-            // Enable inputs
+            els.setupFormArea.classList.remove('collapsed');
             els.surahSearchInput.disabled = false;
             els.startAyah.disabled = false;
             els.endAyah.disabled = false;
@@ -1284,16 +1542,13 @@
 
         // --- Helper Functions ---
         function populateAyahInputs(totalAyah) {
-            // Setup Atribut Input
             els.startAyah.min = 1;
             els.startAyah.max = totalAyah;
             els.startAyah.value = 1;
-            
             els.endAyah.min = 1;
             els.endAyah.max = totalAyah;
             els.endAyah.value = totalAyah;
 
-            // Setup Datalist untuk pilihan dropdown
             els.ayahOptions.innerHTML = '';
             for (let i = 1; i <= totalAyah; i++) {
                 const option = document.createElement('option');
