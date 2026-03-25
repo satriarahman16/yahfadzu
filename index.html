@@ -5,19 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Yahfadzu - Aplikasi Muroja'ah Al-Qur'an</title>
     
-    <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#059669">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Yahfadzu">
     
-    <!-- Google Fonts: Poppins untuk UI, Amiri untuk teks Arab -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
     <style>
@@ -25,7 +22,7 @@
            1. CSS VARIABLES (PALET WARNA & UKURAN)
            ========================================= */
         :root {
-            /* Colors */
+            /* Colors - Light Mode Defaults */
             --bg-body: #f8fafc;
             --emerald-50: #ecfdf5;
             --emerald-100: #d1fae5;
@@ -66,6 +63,23 @@
             --font-arabic: 'Amiri', serif;
         }
 
+        /* --- DARK MODE VARIABLES --- */
+        body.dark-mode {
+            --bg-body: #0f172a; 
+            --slate-50: #1e293b; 
+            --slate-100: #334155; 
+            --slate-200: #475569; 
+            --slate-600: #cbd5e1; 
+            --slate-700: #e2e8f0; 
+            --slate-800: #f8fafc; 
+            
+            --emerald-50: rgba(16, 185, 129, 0.1);
+            --emerald-100: rgba(16, 185, 129, 0.2);
+            
+            --shadow-glass: 0 8px 30px rgba(0,0,0,0.4);
+            --shadow-glass-hover: 0 8px 30px rgba(0,0,0,0.6);
+        }
+
         /* =========================================
            2. RESET & BASE STYLES
            ========================================= */
@@ -83,6 +97,7 @@
             display: flex;
             flex-direction: column;
             position: relative;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         ::selection {
@@ -101,7 +116,7 @@
            ========================================= */
         .container {
             width: 100%;
-            max-width: 56rem; /* 896px */
+            max-width: 56rem; 
             margin: 0 auto;
             padding: 0 1rem;
         }
@@ -119,6 +134,8 @@
         .mt-8 { margin-top: 2rem; }
         .mb-6 { margin-bottom: 1.5rem; }
         .text-emerald { color: var(--emerald-600) !important; }
+        
+        body.dark-mode .text-emerald { color: var(--emerald-500) !important; }
 
         /* =========================================
            4. BACKGROUND DECORATION
@@ -141,6 +158,11 @@
             background-color: rgba(16, 185, 129, 0.05);
             border-radius: 50%;
             filter: blur(60px);
+            transition: background-color 0.3s ease;
+        }
+        
+        body.dark-mode .bg-glow {
+            background-color: rgba(16, 185, 129, 0.15);
         }
 
         /* =========================================
@@ -197,27 +219,44 @@
             opacity: 0.9;
         }
 
-        /* Install App Button */
-        .btn-install-app {
+        .header-actions {
             display: flex;
             align-items: center;
-            gap: 0.375rem;
+            gap: 0.75rem;
+        }
+
+        /* Buttons in Header (Install & Theme) */
+        .btn-header-action {
+            display: flex;
+            align-items: center;
+            justify-content: center;
             background: rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(8px);
             border: 1px solid rgba(255, 255, 255, 0.3);
             color: white;
-            padding: 0.5rem 1rem;
             border-radius: 0.75rem;
             font-weight: 600;
-            font-size: 0.875rem;
             cursor: pointer;
             transition: all 0.2s ease;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         
-        .btn-install-app:hover {
+        .btn-header-action:hover {
             background: rgba(255, 255, 255, 0.3);
             transform: translateY(-1px);
+        }
+        
+        .btn-install-app {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            gap: 0.375rem;
+        }
+        
+        .btn-theme-toggle {
+            width: 2.5rem;
+            height: 2.5rem;
+            font-size: 1.25rem;
+            border-radius: 50%; /* Circle */
         }
 
         @media (min-width: 768px) {
@@ -239,10 +278,17 @@
             backdrop-filter: blur(24px);
             border-radius: 1.5rem;
             box-shadow: var(--shadow-glass);
-            border: 1px solid white;
+            border: 1px solid rgba(255, 255, 255, 0.5);
             padding: 1.5rem;
             margin-bottom: 2rem;
             transition: all 0.3s ease;
+        }
+
+        body.dark-mode .card,
+        body.dark-mode .player-card,
+        body.dark-mode .modal-content {
+            background: rgba(30, 41, 59, 0.85); 
+            border-color: rgba(255, 255, 255, 0.1);
         }
 
         .card:hover { box-shadow: var(--shadow-glass-hover); }
@@ -354,6 +400,10 @@
             appearance: none;
         }
         
+        body.dark-mode .form-control {
+            background-color: rgba(15, 23, 42, 0.6); 
+        }
+        
         select.form-control { cursor: pointer; }
         input.form-control { font-weight: 500; }
 
@@ -362,13 +412,20 @@
             box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
             background-color: white;
         }
+        
+        body.dark-mode .form-control:focus { background-color: #1e293b; }
 
-        .form-control:hover:not(:disabled) { border-color: var(--emerald-200); }
+        .form-control:hover:not(:disabled) { border-color: var(--emerald-400); }
 
         .form-control:disabled {
             background-color: var(--slate-100);
             color: var(--slate-400);
             cursor: not-allowed;
+        }
+        
+        body.dark-mode .form-control:disabled {
+            background-color: rgba(51, 65, 85, 0.5);
+            color: #94a3b8; 
         }
 
         .range-wrapper {
@@ -380,6 +437,11 @@
         .range-separator {
             color: var(--slate-400);
             font-weight: 700;
+        }
+
+        .text-center-input {
+            text-align: center;
+            padding-left: 1rem;
         }
 
         /* CUSTOM DROPDOWN (Searchable) */
@@ -401,6 +463,11 @@
             gap: 0.25rem;
         }
         
+        body.dark-mode .dropdown-menu {
+            background: #1e293b;
+            border-color: var(--emerald-600);
+        }
+        
         .dropdown-item {
             padding: 0.75rem 1rem;
             border-radius: 0.5rem;
@@ -415,6 +482,11 @@
             background-color: var(--emerald-50);
             color: var(--emerald-700);
         }
+        
+        body.dark-mode .dropdown-item:hover {
+            background-color: rgba(16, 185, 129, 0.2);
+            color: var(--emerald-400);
+        }
 
         /* CUSTOM VOLUME SLIDER */
         .volume-wrapper {
@@ -427,12 +499,16 @@
             padding: 0.75rem 1rem;
             transition: all 0.2s;
         }
+        
+        body.dark-mode .volume-wrapper { background-color: rgba(15, 23, 42, 0.6); }
 
         .volume-wrapper:focus-within {
             border-color: var(--emerald-500);
             box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
             background-color: white;
         }
+        
+        body.dark-mode .volume-wrapper:focus-within { background-color: #1e293b; }
 
         .volume-slider {
             flex: 1;
@@ -459,7 +535,6 @@
             transform: scale(1.2);
             background: var(--emerald-600);
         }
-
 
         /* =========================================
            8. BUTTONS
@@ -548,6 +623,7 @@
             overflow: hidden;
             position: relative;
             margin-top: 2rem;
+            transition: all 0.3s ease;
         }
 
         .player-bg-icon {
@@ -559,6 +635,8 @@
             font-size: 12.5rem;
             color: var(--emerald-900);
         }
+        
+        body.dark-mode .player-bg-icon { color: var(--emerald-500); opacity: 0.03; }
 
         .progress-bar {
             background: linear-gradient(to right, var(--emerald-50), rgba(20, 184, 166, 0.1));
@@ -611,6 +689,8 @@
             letter-spacing: 0.1em;
             margin-bottom: 0.125rem;
         }
+        
+        body.dark-mode .progress-text-label { color: var(--emerald-500); }
 
         .progress-text-value {
             font-size: 1.25rem;
@@ -628,6 +708,8 @@
             border: 1px solid rgba(16, 185, 129, 0.2);
             text-align: center;
         }
+        
+        body.dark-mode .ayah-position { background: rgba(30, 41, 59, 0.6); }
 
         @media (min-width: 768px) { .ayah-position { text-align: right; } }
 
@@ -661,6 +743,7 @@
         }
         
         .surah-badge span { color: var(--emerald-700); font-weight: 600; font-size: 0.875rem; }
+        body.dark-mode .surah-badge span { color: var(--emerald-400); }
 
         .arabic-text {
             font-family: var(--font-arabic);
@@ -669,6 +752,25 @@
             margin: 1.5rem 0 3rem 0;
             line-height: 2.2 !important;
             filter: drop-shadow(0 1px 1px rgba(0,0,0,0.05));
+        }
+
+        /* --- HIGHLIGHT KATA (STABILO AKURAT 100%) --- */
+        .word-span {
+            border-radius: 0.375rem;
+            padding: 0 0.125rem;
+            transition: background-color 0.15s ease, color 0.15s ease;
+            display: inline-block;
+        }
+        .word-span.highlighted {
+            background-color: var(--emerald-200);
+            color: var(--emerald-900);
+            box-shadow: 0 0 0 2px var(--emerald-200);
+        }
+        
+        body.dark-mode .word-span.highlighted {
+            background-color: var(--emerald-400); 
+            color: #064e3b; 
+            box-shadow: 0 0 0 2px var(--emerald-400);
         }
 
         @media (min-width: 768px) {
@@ -684,24 +786,8 @@
             padding: 1.5rem;
             border: 1px solid var(--slate-100);
         }
-
-        .text-latin {
-            font-size: 1.125rem;
-            color: var(--emerald-700);
-            font-style: italic;
-            margin-bottom: 1.25rem;
-            font-weight: 500;
-            line-height: 1.625;
-        }
-
-        @media (min-width: 768px) { .text-latin { font-size: 1.25rem; } }
-
-        .divider {
-            width: 6rem;
-            height: 1px;
-            background: linear-gradient(to right, transparent, var(--emerald-200), transparent);
-            margin: 1.25rem auto;
-        }
+        
+        body.dark-mode .translation-box { background-color: rgba(15, 23, 42, 0.4); }
 
         .text-indonesia {
             color: var(--slate-600);
@@ -762,6 +848,9 @@
         .modal-icon.success { background-color: var(--emerald-100); color: var(--emerald-500); }
         .modal-icon.warning { background-color: var(--amber-100); color: var(--amber-500); }
         
+        body.dark-mode .modal-icon.success { background-color: rgba(16, 185, 129, 0.2); }
+        body.dark-mode .modal-icon.warning { background-color: rgba(245, 158, 11, 0.2); }
+        
         .modal-title { font-size: 1.5rem; font-weight: 700; color: var(--slate-800); margin-bottom: 0.5rem; }
         .modal-text { color: var(--slate-600); margin-bottom: 2rem; line-height: 1.5; }
         
@@ -800,16 +889,16 @@
         /* Status Messages */
         .status-msg { padding: 1rem; border-radius: 0.5rem; margin-bottom: 2rem; text-align: center; transition: all 0.3s ease; }
         .status-error { background-color: #fee2e2; color: #991b1b; }
+        
+        body.dark-mode .status-error { background-color: rgba(220, 38, 38, 0.2); color: #fca5a5; }
     </style>
 </head>
 <body>
 
-    <!-- Decorative Background -->
     <div class="bg-decoration">
         <div class="bg-glow"></div>
     </div>
 
-    <!-- Header -->
     <header class="header">
         <div class="container header-content">
             <div class="brand">
@@ -822,19 +911,21 @@
                 </div>
             </div>
             
-            <!-- Tombol Install PWA -->
-            <button id="btnInstall" class="hidden btn-install-app">
-                <i class="ph-bold ph-download-simple text-lg"></i> Install
-            </button>
+            <div class="header-actions">
+                <button id="btnInstall" class="hidden btn-header-action btn-install-app">
+                    <i class="ph-bold ph-download-simple text-lg"></i> Install
+                </button>
+                
+                <button id="btnThemeToggle" class="btn-header-action btn-theme-toggle" aria-label="Toggle Dark Mode">
+                    <i class="ph-fill ph-moon" id="themeIcon"></i>
+                </button>
+            </div>
         </div>
     </header>
 
-    <!-- Main Content -->
     <main class="main-content container relative z-10">
         
-        <!-- Setup Card -->
         <div class="card" id="setupCard">
-            <!-- Container untuk Animasi Collapse Panel Pengaturan -->
             <div id="setupFormArea" class="setup-area">
                 <div class="card-header">
                     <div class="card-icon">
@@ -844,7 +935,6 @@
                 </div>
                 
                 <div class="form-grid">
-                    <!-- Pencarian Surah (Custom Dropdown) -->
                     <div class="form-group relative">
                         <label class="form-label">Cari & Pilih Surah</label>
                         <div class="input-wrapper" id="surahSearchContainer">
@@ -852,14 +942,12 @@
                             <input type="text" id="surahSearchInput" class="form-control" placeholder="Ketik nama surah..." autocomplete="off">
                             <div class="input-icon-right"><i class="ph-bold ph-caret-down"></i></div>
                             
-                            <!-- Dropdown List Container -->
                             <div id="surahDropdownList" class="dropdown-menu hidden">
                                 <div class="dropdown-item text-center">Memuat daftar surah...</div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Reciter Selection (Nilai: equranId|quranComId) -->
                     <div class="form-group">
                         <label class="form-label">Qari (Suara Audio)</label>
                         <div class="input-wrapper">
@@ -875,7 +963,6 @@
                         </div>
                     </div>
 
-                    <!-- Range Ayat -->
                     <div class="form-group">
                         <label class="form-label">Rentang Ayat</label>
                         <div class="range-wrapper">
@@ -889,11 +976,9 @@
                                 <input type="number" id="endAyah" list="ayahOptions" class="form-control text-center-input" placeholder="Akhir" disabled min="1">
                             </div>
                         </div>
-                        <!-- Daftar Pilihan Ayat -->
                         <datalist id="ayahOptions"></datalist>
                     </div>
 
-                    <!-- Repeat Count -->
                     <div class="form-group">
                         <label class="form-label">Jumlah Pengulangan (1-100)</label>
                         <div class="input-wrapper">
@@ -902,7 +987,6 @@
                         </div>
                     </div>
 
-                    <!-- Volume Slider -->
                     <div class="form-group" style="grid-column: 1 / -1;">
                         <label class="form-label">Volume Audio</label>
                         <div class="volume-wrapper">
@@ -912,10 +996,7 @@
                         </div>
                     </div>
                 </div>
-            </div> <!-- End of setup-area -->
-
-            <!-- Action Buttons -->
-            <div class="btn-group">
+            </div> <div class="btn-group">
                 <button id="btnPlay" class="btn btn-primary" disabled>
                     <i class="ph-fill ph-play-circle"></i> Mulai Hafalan
                 </button>
@@ -928,17 +1009,13 @@
             </div>
         </div>
 
-        <!-- Error Messages -->
         <div id="statusMessage" class="status-msg status-error hidden"></div>
 
-        <!-- Player & Display Area (Hidden initially) -->
         <div id="playerArea" class="player-card hidden">
-            <!-- Background Decoration -->
             <div class="player-bg-icon">
                 <i class="ph-fill ph-moon-stars"></i>
             </div>
 
-            <!-- Progress Bar -->
             <div class="progress-bar">
                 <div class="progress-info">
                     <div class="flex-center spin-icon-wrapper">
@@ -959,7 +1036,6 @@
                 </div>
             </div>
 
-            <!-- Ayah Display -->
             <div class="display-area">
                 <div id="ayahContent">
                     <div class="surah-badge">
@@ -970,8 +1046,6 @@
                     <h3 id="teksArab" class="arabic-text" dir="rtl"></h3>
                     
                     <div class="translation-box">
-                        <p id="teksLatin" class="text-latin"></p>
-                        <div class="divider"></div>
                         <p id="teksIndonesia" class="text-indonesia"></p>
                     </div>
                 </div>
@@ -980,7 +1054,6 @@
 
     </main>
 
-    <!-- Custom Modal -->
     <div id="customModal" class="modal-overlay">
         <div class="modal-content">
             <div id="modalIcon" class="modal-icon"></div>
@@ -992,10 +1065,9 @@
 
     <footer>
         <p>Dibangun untuk membantu Muroja'ah.</p>
-        <p>Data disediakan oleh <a href="https://equran.id" target="_blank">equran.id</a> & <a href="https://quran.com" target="_blank">Quran.com</a> API.</p>
+        <p>Data stabilo dan audio disediakan secara akurat oleh API <a href="https://quran.com" target="_blank">Quran.com</a>.</p>
     </footer>
 
-    <!-- JavaScript Logic -->
     <script>
         // --- State Management ---
         const state = {
@@ -1010,9 +1082,18 @@
             endAyah: 1,
             currentAyahPlaying: 1,
             audioElement: new Audio(),
+            
+            useQuranComData: false, 
             currentAudioSource: 'equran',
-            currentFallbackUrl: ''
+            currentFallbackUrl: '',
+            currentSegments: null,
+            quranComAudioData: null,
+            totalWords: 0,
+            lastSpokenPos: -1, // Menandai posisi kata Arab terakhir yang dilafazkan
+            currentWordPosition: -1
         };
+
+        let animationFrameId = null;
 
         // --- DOM Elements ---
         const els = {
@@ -1033,7 +1114,9 @@
             btnPlay: document.getElementById('btnPlay'),
             btnPause: document.getElementById('btnPause'),
             btnStop: document.getElementById('btnStop'),
-            btnInstall: document.getElementById('btnInstall'), // DOM tombol install
+            btnInstall: document.getElementById('btnInstall'),
+            btnThemeToggle: document.getElementById('btnThemeToggle'),
+            themeIcon: document.getElementById('themeIcon'),
             
             statusMessage: document.getElementById('statusMessage'),
             playerArea: document.getElementById('playerArea'),
@@ -1045,41 +1128,65 @@
             lblAyahNumberInText: document.getElementById('lblAyahNumberInText'),
             
             teksArab: document.getElementById('teksArab'),
-            teksLatin: document.getElementById('teksLatin'),
             teksIndonesia: document.getElementById('teksIndonesia'),
         };
 
         // --- Initialization ---
         async function init() {
-            // Setup Web App Installation (PWA)
+            setupTheme();
             setupPWA();
-
             try {
-                const response = await fetch('https://equran.id/api/v2/surat');
+                // Mengambil list Surah dari API Quran.com
+                const response = await fetch('https://api.quran.com/api/v4/chapters?language=id');
                 const result = await response.json();
                 
-                if (result.code === 200) {
-                    state.surahList = result.data;
+                if (result.chapters) {
+                    state.surahList = result.chapters;
                     renderSurahDropdown(state.surahList);
                 } else {
-                    showError("Gagal memuat daftar Surah dari API.");
+                    showError("Gagal memuat daftar Surah dari API Quran.com.");
                 }
             } catch (error) {
-                showError("Terjadi kesalahan jaringan saat memuat data.");
+                showError("Terjadi kesalahan jaringan saat memuat data surah.");
                 console.error(error);
             }
             
             state.audioElement.volume = els.volumeSlider.value;
         }
 
+        // --- THEME / MODE GELAP TERANG ---
+        function setupTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+                document.body.classList.add('dark-mode');
+                els.themeIcon.classList.replace('ph-moon', 'ph-sun');
+            } else {
+                document.body.classList.remove('dark-mode');
+                els.themeIcon.classList.replace('ph-sun', 'ph-moon');
+            }
+
+            els.btnThemeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                const isDark = document.body.classList.contains('dark-mode');
+                
+                if (isDark) {
+                    els.themeIcon.classList.replace('ph-moon', 'ph-sun');
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    els.themeIcon.classList.replace('ph-sun', 'ph-moon');
+                    localStorage.setItem('theme', 'light');
+                }
+            });
+        }
+
         // --- SETUP PWA & INSTALASI ---
         let deferredPrompt;
         function setupPWA() {
-            // 1. Buat data URI SVG untuk icon aplikasi (sama dengan logo header)
             const pwaIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><rect width="256" height="256" rx="56" fill="#059669"/><path d="M216,40H40A16,16,0,0,0,24,56V200a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40Zm-8,160H48V56H208V200ZM80,104a8,8,0,0,1,8-8h80a8,8,0,0,1,0,16H88A8,8,0,0,1,80,104Zm0,40a8,8,0,0,1,8-8h80a8,8,0,0,1,0,16H88A8,8,0,0,1,80,144Z" fill="#ffffff"/></svg>`;
             const pwaIconUrl = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(pwaIconSvg);
 
-            // 2. Tulis File Web Manifest secara dinamis
             const manifestObj = {
                 name: "Yahfadzu - Hafalan Al-Qur'an",
                 short_name: "Yahfadzu",
@@ -1088,9 +1195,7 @@
                 display: "standalone",
                 background_color: "#f8fafc",
                 theme_color: "#059669",
-                icons: [
-                    { src: pwaIconUrl, sizes: "512x512", type: "image/svg+xml", purpose: "any maskable" }
-                ]
+                icons: [{ src: pwaIconUrl, sizes: "512x512", type: "image/svg+xml", purpose: "any maskable" }]
             };
 
             const manifestBlob = new Blob([JSON.stringify(manifestObj)], { type: 'application/manifest+json' });
@@ -1099,7 +1204,6 @@
             manifestLink.href = URL.createObjectURL(manifestBlob);
             document.head.appendChild(manifestLink);
 
-            // 3. Register Worker "Dummy" yang diperlukan browser untuk pass check instalasi
             if ('serviceWorker' in navigator) {
                 const swCode = `
                     self.addEventListener('install', (e) => { self.skipWaiting(); });
@@ -1112,24 +1216,32 @@
                 navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(err => console.log('SW setup skipped.'));
             }
 
-            // 4. Deteksi Izin Install & Tampilkan Tombol
+            // Tampilkan tombol instal jika browser memunculkan event install prompt
             window.addEventListener('beforeinstallprompt', (e) => {
-                // Cegah Chrome memunculkan prompt mini otomatis
                 e.preventDefault();
-                // Simpan event sehingga bisa dimunculkan nanti
                 deferredPrompt = e;
-                // Tampilkan tombol Install di UI
                 els.btnInstall.classList.remove('hidden');
             });
 
-            // 5. Aksi saat tombol Install ditekan
+            // Cek apakah web sudah dibuka dalam mode standalone (sudah diinstall)
+            if (window.matchMedia('(display-mode: standalone)').matches) {
+                els.btnInstall.classList.add('hidden');
+            } else {
+                // Sebagai fallback untuk iOS / Browser lain, aktifkan tombol instal untuk instruksi manual
+                els.btnInstall.classList.remove('hidden');
+            }
+
             els.btnInstall.addEventListener('click', async () => {
                 if (deferredPrompt) {
-                    deferredPrompt.prompt(); // Tampilkan popup instalasi bawaan OS
+                    // Panggil prompt instalasi bawaan Chrome/Android
+                    deferredPrompt.prompt();
                     const { outcome } = await deferredPrompt.userChoice;
-                    console.log(`User response to the install prompt: ${outcome}`);
+                    console.log(`User response: ${outcome}`);
                     deferredPrompt = null;
-                    els.btnInstall.classList.add('hidden'); // Sembunyikan tombol setelah diklik
+                    els.btnInstall.classList.add('hidden');
+                } else {
+                    // Jika diblokir atau di iOS, tampilkan modal petunjuk
+                    showModal('warning', 'Install Aplikasi', 'Untuk memasang aplikasi ini di layar utama Anda:\n\nAndroid (Chrome): Ketuk ikon menu (⋮) lalu pilih "Tambahkan ke Layar Utama".\n\niOS (Safari): Ketuk ikon Share lalu pilih "Tambah ke Layar Utama".');
                 }
             });
         }
@@ -1153,7 +1265,7 @@
             }
             
             titleEl.textContent = title;
-            textEl.textContent = text;
+            textEl.innerText = text;
             modal.classList.add('active');
             
             btn.onclick = () => {
@@ -1165,24 +1277,19 @@
         // --- Fitur Pencarian Surah ---
         function renderSurahDropdown(list) {
             els.surahDropdownList.innerHTML = '';
-            
             if (list.length === 0) {
                 els.surahDropdownList.innerHTML = '<div class="dropdown-item text-center" style="color: var(--slate-400);">Surah tidak ditemukan</div>';
                 return;
             }
-            
             list.forEach(surah => {
                 const item = document.createElement('div');
                 item.className = 'dropdown-item';
                 item.style.display = 'flex';
                 item.style.alignItems = 'center';
                 item.style.gap = '0.5rem';
-                item.innerHTML = `<i class="ph-fill ph-book-open" style="color: var(--emerald-500); font-size: 1.125rem;"></i> <span>${surah.nomor}. ${surah.namaLatin} <span style="color: var(--slate-400); font-size: 0.8rem;">(${surah.jumlahAyat} Ayat)</span></span>`;
+                item.innerHTML = `<i class="ph-fill ph-book-open" style="color: var(--emerald-500); font-size: 1.125rem;"></i> <span>${surah.id}. ${surah.name_simple} <span style="color: var(--slate-400); font-size: 0.8rem;">(${surah.verses_count} Ayat)</span></span>`;
                 
-                item.addEventListener('click', () => {
-                    handleSurahSelection(surah);
-                });
-                
+                item.addEventListener('click', () => handleSurahSelection(surah));
                 els.surahDropdownList.appendChild(item);
             });
         }
@@ -1190,8 +1297,9 @@
         els.surahSearchInput.addEventListener('input', (e) => {
             const query = e.target.value.toLowerCase();
             const filteredList = state.surahList.filter(surah => 
-                surah.namaLatin.toLowerCase().includes(query) || 
-                surah.nomor.toString() === query
+                surah.name_simple.toLowerCase().includes(query) || 
+                surah.translated_name.name.toLowerCase().includes(query) ||
+                surah.id.toString() === query
             );
             renderSurahDropdown(filteredList);
             els.surahDropdownList.classList.remove('hidden');
@@ -1199,47 +1307,27 @@
 
         els.surahSearchInput.addEventListener('focus', () => {
             if (state.surahList.length > 0) {
-                if (els.surahSearchInput.value === '') {
-                    renderSurahDropdown(state.surahList);
-                }
+                if (els.surahSearchInput.value === '') renderSurahDropdown(state.surahList);
                 els.surahDropdownList.classList.remove('hidden');
             }
         });
 
         document.addEventListener('click', (e) => {
-            if (!els.surahDropdownContainer.contains(e.target)) {
-                els.surahDropdownList.classList.add('hidden');
-            }
+            if (!els.surahDropdownContainer.contains(e.target)) els.surahDropdownList.classList.add('hidden');
         });
 
-        async function handleSurahSelection(surah) {
-            els.surahSearchInput.value = `${surah.nomor}. ${surah.namaLatin}`;
+        function handleSurahSelection(surah) {
+            els.surahSearchInput.value = `${surah.id}. ${surah.name_simple}`;
             els.surahDropdownList.classList.add('hidden');
-            state.selectedSurahNumber = surah.nomor;
-
-            els.surahSearchInput.disabled = true;
-            els.startAyah.disabled = true;
-            els.endAyah.disabled = true;
-            els.btnPlay.disabled = true;
-
-            try {
-                const response = await fetch(`https://equran.id/api/v2/surat/${surah.nomor}`);
-                const result = await response.json();
-
-                if (result.code === 200) {
-                    state.currentSurahData = result.data;
-                    populateAyahInputs(result.data.jumlahAyat);
-                    els.btnPlay.disabled = false;
-                } else {
-                    showError("Gagal memuat detail Surah.");
-                }
-            } catch (error) {
-                showError("Gagal mengambil data ayat.");
-            } finally {
-                els.surahSearchInput.disabled = false;
-                els.startAyah.disabled = false;
-                els.endAyah.disabled = false;
-            }
+            
+            state.selectedSurahNumber = surah.id;
+            state.currentSurahData = surah; 
+            
+            populateAyahInputs(surah.verses_count);
+            
+            els.btnPlay.disabled = false;
+            els.startAyah.disabled = false;
+            els.endAyah.disabled = false;
         }
 
         // --- Fitur Kontrol Volume ---
@@ -1255,23 +1343,35 @@
         });
 
         // --- Validasi Rentang Ayat ---
+        els.startAyah.addEventListener('input', () => {
+            let start = parseInt(els.startAyah.value);
+            let max = parseInt(els.startAyah.max);
+            if (!isNaN(start) && start >= 1 && start <= max) {
+                els.endAyah.min = start;
+            }
+        });
+
         els.startAyah.addEventListener('change', () => {
             let start = parseInt(els.startAyah.value);
             let end = parseInt(els.endAyah.value);
             let max = parseInt(els.startAyah.max);
+            
             if (isNaN(start) || start < 1) start = 1;
             if (start > max) start = max;
-            if (start > end) els.endAyah.value = start;
+            
             els.startAyah.value = start;
+            els.endAyah.min = start; 
+            if (start > end) els.endAyah.value = start;
         });
 
         els.endAyah.addEventListener('change', () => {
             let start = parseInt(els.startAyah.value);
             let end = parseInt(els.endAyah.value);
             let max = parseInt(els.endAyah.max);
-            if (isNaN(end) || end < 1) end = 1;
+            
+            if (isNaN(end) || end < start) end = start; 
             if (end > max) end = max;
-            if (end < start) els.startAyah.value = end;
+            
             els.endAyah.value = end;
         });
 
@@ -1285,7 +1385,15 @@
                 els.btnPause.innerHTML = '<i class="ph-fill ph-play-circle"></i> Lanjutkan';
                 els.setupFormArea.classList.remove('collapsed');
             } else if (state.isPlaying && state.isPaused) {
-                state.audioElement.play().catch(e => console.error(e));
+                const playPromise = state.audioElement.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        if (animationFrameId) cancelAnimationFrame(animationFrameId);
+                        animationFrameId = requestAnimationFrame(updateHighlight);
+                    }).catch(e => {
+                        if (e.name !== 'AbortError') console.error("Play Promise error:", e);
+                    });
+                }
                 state.isPaused = false;
                 els.btnPause.className = 'btn btn-warning';
                 els.btnPause.innerHTML = '<i class="ph-fill ph-pause-circle"></i> Jeda';
@@ -1294,8 +1402,106 @@
         });
         els.btnStop.addEventListener('click', stopMemorization);
 
-        // --- Audio Core Logic ---
+        // --- ALGORITMA INTERPOLASI KATA YANG HILANG ---
+        function interpolateMissingSegments(rawSegments, lastSpokenPos) {
+            let fixedSegments = [];
+            for (let i = 0; i < rawSegments.length; i++) {
+                let curr = rawSegments[i];
+                let next = rawSegments[i+1];
+                let targetPos;
+
+                if (next && next[0] > curr[0]) {
+                    targetPos = next[0] - 1;
+                } else if (!next) {
+                    targetPos = lastSpokenPos;
+                } else {
+                    targetPos = curr[0]; 
+                }
+
+                if (targetPos > curr[0]) {
+                    let count = targetPos - curr[0] + 1;
+                    let duration = curr[2] - curr[1];
+                    let partDuration = duration / count;
+                    for (let j = 0; j < count; j++) {
+                        fixedSegments.push([
+                            curr[0] + j,
+                            curr[1] + j * partDuration,
+                            curr[1] + (j + 1) * partDuration
+                        ]);
+                    }
+                } else {
+                    fixedSegments.push(curr);
+                }
+            }
+            return fixedSegments;
+        }
+
+        // --- Audio & Highlight Logic (Karaoke Sempurna Quran.com 60FPS) ---
         state.audioElement.addEventListener('ended', handleAudioEnded);
+
+        function updateHighlight() {
+            if (!state.isPlaying || state.isPaused) return;
+
+            let activePositions = [];
+
+            if (state.useQuranComData && state.currentSegments) {
+                const currentTimeMs = state.audioElement.currentTime * 1000;
+                let segIndex = -1;
+
+                // Cari segmen kata aktif
+                for (let i = 0; i < state.currentSegments.length; i++) {
+                    if (currentTimeMs >= state.currentSegments[i][1] && currentTimeMs <= state.currentSegments[i][2]) {
+                        segIndex = i;
+                        break;
+                    }
+                }
+
+                if (segIndex !== -1) {
+                    activePositions.push(state.currentSegments[segIndex][0]);
+                } else {
+                    // Berada di jeda antar kata atau trailing silence
+                    for (let i = state.currentSegments.length - 1; i >= 0; i--) {
+                        if (currentTimeMs > state.currentSegments[i][2]) {
+                            activePositions.push(state.currentSegments[i][0]);
+                            break;
+                        }
+                    }
+                    if (activePositions.length === 0 && state.currentSegments[0]) {
+                        // Belum mencapai audio pertama
+                        activePositions.push(state.currentSegments[0][0]);
+                    }
+                }
+            } else {
+                // FALLBACK MODE (Equran)
+                if (state.audioElement.duration && state.totalWords > 0) {
+                    const progress = state.audioElement.currentTime / state.audioElement.duration;
+                    let p = Math.floor(progress * state.totalWords);
+                    
+                    if (p >= state.totalWords - 1) p = state.totalWords - 2;
+                    if (p < 0) p = 0;
+                    
+                    activePositions.push(p);
+                }
+            }
+
+            // Bersihkan highlight yang tidak aktif
+            document.querySelectorAll('.word-span.highlighted').forEach(el => {
+                let idNum = parseInt(el.id.replace('word-', ''));
+                if (!activePositions.includes(idNum)) {
+                    el.classList.remove('highlighted');
+                }
+            });
+
+            // Nyalakan highlight yang aktif
+            activePositions.forEach(pos => {
+                const span = document.getElementById(`word-${pos}`);
+                if (span && !span.classList.contains('highlighted')) {
+                    span.classList.add('highlighted');
+                }
+            });
+
+            animationFrameId = requestAnimationFrame(updateHighlight);
+        }
         
         state.audioElement.addEventListener('error', (e) => {
             if (!state.isPlaying) return;
@@ -1303,16 +1509,26 @@
             let detail = mediaError ? ` (Kode: ${mediaError.code})` : "";
             
             // JIKA QURAN.COM GAGAL, BERALIH OTOMATIS KE EQURAN
-            if (state.currentAudioSource === 'quran.com' && state.currentFallbackUrl) {
+            if (state.useQuranComData && state.currentFallbackUrl) {
                 console.warn("Quran.com audio failed. Switching to equran.id fallback...");
-                state.currentAudioSource = 'equran';
+                state.useQuranComData = false;
+                
+                let wordSpans = document.querySelectorAll('.word-span');
+                wordSpans.forEach((span, i) => { span.id = `word-${i}`; });
+                state.totalWords = wordSpans.length;
+
                 state.audioElement.src = state.currentFallbackUrl;
                 state.audioElement.load();
                 
                 const playPromise = state.audioElement.play();
                 if (playPromise !== undefined) {
-                    playPromise.catch(err => {
-                        triggerErrorSkip(detail);
+                    playPromise.then(() => {
+                        if (animationFrameId) cancelAnimationFrame(animationFrameId);
+                        animationFrameId = requestAnimationFrame(updateHighlight);
+                    }).catch(err => {
+                        if (err.name !== 'AbortError') {
+                            triggerErrorSkip(detail);
+                        }
                     });
                 }
                 return;
@@ -1323,12 +1539,10 @@
 
         function triggerErrorSkip(detail) {
             showError(`Gagal memutar audio ayat ${state.currentAyahPlaying}${detail}. Melompat ke ayat berikutnya...`);
-            setTimeout(() => {
-                if (state.isPlaying) handleAudioEnded();
-            }, 2000);
+            setTimeout(() => { if (state.isPlaying) handleAudioEnded(); }, 2000);
         }
 
-        function startMemorization() {
+        async function startMemorization() {
             if (!state.currentSurahData) return;
 
             const start = parseInt(els.startAyah.value);
@@ -1343,6 +1557,29 @@
             if (repeat > 100) repeat = 100;
             els.repeatCount.value = repeat;
 
+            els.setupFormArea.classList.add('collapsed');
+
+            const originalBtnHtml = els.btnPlay.innerHTML;
+            els.btnPlay.innerHTML = '<i class="ph-bold ph-spinner-gap spin-icon"></i> Mengambil Data...';
+            els.btnPlay.disabled = true;
+
+            try {
+                const qariValues = els.qariSelect.value.split('|');
+                const quranComQariId = qariValues[1];
+                const surahId = state.selectedSurahNumber;
+                
+                const response = await fetch(`https://api.quran.com/api/v4/recitations/${quranComQariId}/by_chapter/${surahId}`);
+                if (response.ok) {
+                    const result = await response.json();
+                    state.quranComAudioData = result.audio_files;
+                } else {
+                    state.quranComAudioData = null;
+                }
+            } catch (err) {
+                console.warn("Gagal pre-fetch audio chapter", err);
+                state.quranComAudioData = null; 
+            }
+
             state.startAyah = start;
             state.endAyah = end;
             state.targetRepeat = repeat;
@@ -1351,8 +1588,9 @@
             state.isPlaying = true;
             state.isPaused = false;
 
-            els.setupFormArea.classList.add('collapsed');
-
+            els.btnPlay.innerHTML = originalBtnHtml; 
+            els.btnPlay.disabled = false;
+            
             els.btnPlay.classList.add('hidden');
             els.btnPause.classList.remove('hidden');
             els.btnStop.classList.remove('hidden');
@@ -1365,7 +1603,7 @@
 
             els.playerArea.classList.remove('hidden');
             els.lblTotalRepeat.textContent = state.targetRepeat;
-            els.lblSurahName.textContent = state.currentSurahData.namaLatin;
+            els.lblSurahName.textContent = state.currentSurahData.name_simple;
 
             playCurrentAyah();
         }
@@ -1374,63 +1612,93 @@
             if (!state.isPlaying) return;
 
             hideError(); 
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
+            els.teksArab.innerHTML = '';
+            els.teksIndonesia.textContent = 'Memuat ayat...';
 
             els.lblCurrentRepeat.textContent = state.currentRepeat;
             els.lblCurrentAyah.textContent = state.currentAyahPlaying;
             els.lblAyahNumberInText.textContent = state.currentAyahPlaying;
 
-            const ayahData = state.currentSurahData.ayat[state.currentAyahPlaying - 1];
-            if (!ayahData) {
-                stopMemorization();
-                return;
-            }
+            const verseKey = `${state.selectedSurahNumber}:${state.currentAyahPlaying}`;
+            let audioUrl = "";
+            state.currentSegments = null; 
+            state.useQuranComData = false;
 
-            // Set teks utuh secara langsung
-            els.teksArab.textContent = ayahData.teksArab;
-            els.teksLatin.textContent = ayahData.teksLatin;
-            els.teksIndonesia.textContent = ayahData.teksIndonesia;
-
-            // --- FETCH AUDIO QURAN.COM (REALTIME) ---
             const qariValues = els.qariSelect.value.split('|');
             const equranQariId = qariValues[0];
             const quranComQariId = qariValues[1];
-            
-            let audioUrl = "";
-            state.currentAudioSource = 'equran';
-            
-            // Siapkan URL Fallback equran
-            let fallbackUrl = ayahData.audio[equranQariId] || Object.values(ayahData.audio)[0];
-            if (fallbackUrl) fallbackUrl = fallbackUrl.replace(/^http:\/\//i, 'https://');
-            state.currentFallbackUrl = fallbackUrl;
 
             els.btnPause.innerHTML = '<i class="ph-bold ph-spinner-gap spin-icon"></i> Menyiapkan...';
 
+            // MENGAMBIL TEKS ARAB & TERJEMAHAN DARI QURAN.COM
             try {
-                const verseKey = `${state.selectedSurahNumber}:${state.currentAyahPlaying}`;
-                const response = await fetch(`https://api.quran.com/api/v4/verses/by_key/${verseKey}?audio=${quranComQariId}`);
+                const response = await fetch(`https://api.quran.com/api/v4/verses/by_key/${verseKey}?language=id&words=true&word_fields=text_uthmani,char_type_name&translations=33&audio=${quranComQariId}`);
                 if(response.ok) {
                     const data = await response.json();
-                    if (data.verse && data.verse.audio) {
-                        audioUrl = data.verse.audio.url;
+                    if (data.verse && data.verse.words) {
                         
-                        if (audioUrl) {
-                            if (audioUrl.startsWith('//')) {
-                                audioUrl = 'https:' + audioUrl;
-                            } else if (!audioUrl.startsWith('http')) {
-                                audioUrl = 'https://verses.quran.com/' + audioUrl;
+                        let spokenWords = data.verse.words.filter(w => w.char_type_name !== 'end');
+                        if (spokenWords.length === 0) spokenWords = data.verse.words.slice(0, -1);
+                        
+                        state.lastSpokenPos = Math.max(...spokenWords.map(w => w.position));
+                        state.totalWords = Math.max(...data.verse.words.map(w => w.position));
+
+                        els.teksArab.innerHTML = data.verse.words.map(w => 
+                            `<span id="word-${w.position}" class="word-span">${w.text_uthmani}</span>`
+                        ).join(' ');
+
+                        if (data.verse.translations && data.verse.translations.length > 0) {
+                            els.teksIndonesia.innerHTML = data.verse.translations[0].text.replace(/<[^>]*>?/gm, '');
+                        }
+
+                        let audioData = null;
+                        if (data.verse.audio && data.verse.audio.url) {
+                            audioData = data.verse.audio;
+                        } else if (state.quranComAudioData) {
+                            audioData = state.quranComAudioData.find(a => a.verse_key === verseKey);
+                        }
+
+                        if (audioData && audioData.url) {
+                            audioUrl = audioData.url;
+                            if (audioUrl.startsWith('//')) audioUrl = 'https:' + audioUrl;
+                            else if (!audioUrl.startsWith('http')) audioUrl = 'https://verses.quran.com/' + audioUrl;
+                            
+                            if (audioData.segments && audioData.segments.length > 0) {
+                                state.currentSegments = interpolateMissingSegments(audioData.segments, state.lastSpokenPos);
+                                state.useQuranComData = true;
+                                state.currentAudioSource = 'quran.com';
                             }
-                            state.currentAudioSource = 'quran.com';
                         }
                     }
                 }
             } catch (err) {
-                console.warn("Gagal fetch quran.com, menggunakan fallback equran.id", err);
+                console.warn("Gagal fetch quran.com", err);
             }
 
-            // Jika Quran.com gagal/kosong, fallback gunakan Audio Equran
-            if (!audioUrl) {
-                audioUrl = state.currentFallbackUrl;
-                state.currentAudioSource = 'equran';
+            // FALLBACK EQURAN (Jika Quran.com gagal)
+            if (!state.useQuranComData) {
+                try {
+                    const eqResp = await fetch(`https://equran.id/api/v2/surat/${state.selectedSurahNumber}`);
+                    const eqData = await eqResp.json();
+                    const ayahData = eqData.data.ayat[state.currentAyahPlaying - 1];
+                    
+                    if (ayahData) {
+                        const arabicWords = ayahData.teksArab.trim().split(/\s+/);
+                        state.totalWords = arabicWords.length;
+                        
+                        els.teksArab.innerHTML = arabicWords.map((w, index) => `<span id="word-${index}" class="word-span">${w}</span>`).join(' ');
+                        els.teksIndonesia.textContent = ayahData.teksIndonesia;
+                        
+                        audioUrl = ayahData.audio[equranQariId] || Object.values(ayahData.audio)[0];
+                        if (audioUrl) audioUrl = audioUrl.replace(/^http:\/\//i, 'https://');
+                        
+                        state.currentFallbackUrl = audioUrl;
+                        state.currentAudioSource = 'equran';
+                    }
+                } catch (e) {
+                    console.error("Gagal fallback", e);
+                }
             }
             
             els.btnPause.className = 'btn btn-warning';
@@ -1447,7 +1715,10 @@
             
             const playPromise = state.audioElement.play();
             if (playPromise !== undefined) {
-                playPromise.catch(e => {
+                playPromise.then(() => {
+                    animationFrameId = requestAnimationFrame(updateHighlight);
+                }).catch(e => {
+                    if (e.name === 'AbortError') return; 
                     console.error("Play Promise error:", e);
                     if (e.name === 'NotAllowedError') {
                         state.isPaused = true;
@@ -1481,12 +1752,14 @@
             state.isPaused = false;
             state.audioElement.pause();
             state.audioElement.currentTime = 0;
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
             resetUIAfterPlay();
         }
 
         function finishMemorization() {
             state.isPlaying = false;
             state.audioElement.pause();
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
             showModal('success', 'Alhamdulillah!', 'Sesi hafalan telah selesai.', () => {
                 resetUIAfterPlay();
             });
